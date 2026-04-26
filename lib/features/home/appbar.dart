@@ -2,15 +2,32 @@ import 'dart:io';
 
 import 'package:cosmetic_shop/core/constants/app_icons.dart';
 import 'package:cosmetic_shop/core/theme/app_theme.dart';
-import 'package:cosmetic_shop/features/main_navigation_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
-  HomeHeaderDelegate({required this.topPadding});
+  HomeHeaderDelegate({
+    required this.topPadding,
+    this.onSearchTap,
+    this.onCartTap,
+    this.onNotificationTap,
+    this.onScanTap,
+    this.onFilterTap,
+    this.onLocationTap,
+    this.location = 'New York, USA',
+    this.hasNotification = true,
+  });
 
   final double topPadding;
+  final VoidCallback? onSearchTap;
+  final VoidCallback? onCartTap;
+  final VoidCallback? onNotificationTap;
+  final VoidCallback? onScanTap;
+  final VoidCallback? onFilterTap;
+  final VoidCallback? onLocationTap;
+  final String location;
+  final bool hasNotification;
 
   static const double _expandedContent = 150;
   static const double _collapsedContent = 79;
@@ -51,13 +68,14 @@ class HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
                 child: Opacity(
                   opacity: expandedOpacity,
                   child: _ExpandedHeader(
-                    onCartTap: () {},
-                    onNotificationTap: () {},
-                    onSearchTap: () {
-                      MainNavigationScope.of(context).goToTab(MainTab.explore);
-                    },
-                    onScanTap: () {},
-                    onFilterTap: () {},
+                    location: location,
+                    hasNotification: hasNotification,
+                    onCartTap: onCartTap,
+                    onNotificationTap: onNotificationTap,
+                    onSearchTap: onSearchTap,
+                    onScanTap: onScanTap,
+                    onFilterTap: onFilterTap,
+                    onLocationTap: onLocationTap,
                   ),
                 ),
               ),
@@ -72,13 +90,10 @@ class HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
                 child: Opacity(
                   opacity: collapsedOpacity,
                   child: _CollapsedHeader(
-                    onSearchTap: () {
-                      MainNavigationScope.of(context).goToTab(MainTab.explore);
-                    },
-
-                    onScanTap: () {},
-                    onNotificationTap: () {},
-                    hasNotification: true,
+                    onSearchTap: onSearchTap,
+                    onScanTap: onScanTap,
+                    onNotificationTap: onNotificationTap,
+                    hasNotification: hasNotification,
                   ),
                 ),
               ),
@@ -91,7 +106,15 @@ class HomeHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(HomeHeaderDelegate oldDelegate) =>
-      oldDelegate.topPadding != topPadding;
+      oldDelegate.topPadding != topPadding ||
+      oldDelegate.onSearchTap != onSearchTap ||
+      oldDelegate.onCartTap != onCartTap ||
+      oldDelegate.onNotificationTap != onNotificationTap ||
+      oldDelegate.onScanTap != onScanTap ||
+      oldDelegate.onFilterTap != onFilterTap ||
+      oldDelegate.onLocationTap != onLocationTap ||
+      oldDelegate.hasNotification != hasNotification ||
+      oldDelegate.location != location;
 }
 
 class _NativePressable extends StatefulWidget {
@@ -152,22 +175,24 @@ class _NativePressableState extends State<_NativePressable> {
 
 class _ExpandedHeader extends StatelessWidget {
   const _ExpandedHeader({
-    required this.onCartTap,
-    required this.onNotificationTap,
-    required this.onSearchTap,
-    required this.onScanTap,
-    required this.onFilterTap,
+    this.onCartTap,
+    this.onNotificationTap,
+    this.onSearchTap,
+    this.onScanTap,
+    this.onFilterTap,
+    this.onLocationTap,
     this.location = 'New York, USA',
     this.hasNotification = true,
   });
 
   final String location;
   final bool hasNotification;
-  final VoidCallback onCartTap;
-  final VoidCallback onNotificationTap;
-  final VoidCallback onSearchTap;
-  final VoidCallback onScanTap;
-  final VoidCallback onFilterTap;
+  final VoidCallback? onCartTap;
+  final VoidCallback? onNotificationTap;
+  final VoidCallback? onSearchTap;
+  final VoidCallback? onScanTap;
+  final VoidCallback? onFilterTap;
+  final VoidCallback? onLocationTap;
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +204,7 @@ class _ExpandedHeader extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _LocationBlock(location: location, onTap: () {}),
+                child: _LocationBlock(location: location, onTap: onLocationTap),
               ),
               _IconButtonBox(icon: AppIcons.cart, onTap: onCartTap),
               const SizedBox(width: 12),
@@ -385,7 +410,7 @@ class _SearchField extends StatelessWidget {
         AbsorbPointer(
           child: CupertinoSearchTextField(
             placeholder: 'Search',
-            padding: EdgeInsetsGeometry.symmetric(vertical: 16),
+            padding: EdgeInsets.symmetric(vertical: 16),
             backgroundColor: Colors.white,
             suffixIcon: Icon(AppIcons.scan, size: 0),
             suffixMode: OverlayVisibilityMode.never,

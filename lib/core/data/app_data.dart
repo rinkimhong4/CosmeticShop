@@ -135,4 +135,126 @@ class AppData {
       ],
     ),
   ];
+  // orders
+
+  static final List<OrderItem> mockOrders = [
+    OrderItem(
+      id: 'ORD-1001',
+      productName: 'Hydrating Rose Serum',
+      brand: 'Glow Lab',
+      imageUrl:
+          'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400',
+      price: 32.50,
+      quantity: 1,
+      orderDate: DateTime.now().subtract(const Duration(hours: 3)),
+      status: OrderStatus.processing,
+      variant: '30ml',
+    ),
+    OrderItem(
+      id: 'ORD-1002',
+      productName: 'Matte Liquid Lipstick',
+      brand: 'Velvet & Co.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400',
+      price: 18.00,
+      quantity: 2,
+      orderDate: DateTime.now().subtract(const Duration(days: 1)),
+      status: OrderStatus.shipped,
+      variant: 'Ruby Red',
+    ),
+    OrderItem(
+      id: 'ORD-1003',
+      productName: 'Vitamin C Brightening Cream',
+      brand: 'PureSkin',
+      imageUrl:
+          'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400',
+      price: 45.99,
+      quantity: 1,
+      orderDate: DateTime.now().subtract(const Duration(days: 2)),
+      status: OrderStatus.delivered,
+      variant: '50ml',
+    ),
+    OrderItem(
+      id: 'ORD-1004',
+      productName: 'Sakura Body Lotion',
+      brand: 'Bloom',
+      imageUrl:
+          'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400',
+      price: 24.00,
+      quantity: 1,
+      orderDate: DateTime.now().subtract(const Duration(days: 3)),
+      status: OrderStatus.delivered,
+    ),
+    OrderItem(
+      id: 'ORD-1005',
+      productName: 'Charcoal Cleansing Foam',
+      brand: 'Pure Detox',
+      imageUrl:
+          'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400',
+      price: 16.50,
+      quantity: 3,
+      orderDate: DateTime.now().subtract(const Duration(days: 5)),
+      status: OrderStatus.delivered,
+      variant: '150ml',
+    ),
+    OrderItem(
+      id: 'ORD-1006',
+      productName: 'Silk Eye Shadow Palette',
+      brand: 'Velvet & Co.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1583241800698-9c2e0b3c0f08?w=400',
+      price: 52.00,
+      quantity: 1,
+      orderDate: DateTime.now().subtract(const Duration(days: 7)),
+      status: OrderStatus.cancelled,
+      variant: 'Sunset',
+    ),
+    OrderItem(
+      id: 'ORD-1007',
+      productName: 'Argan Hair Oil',
+      brand: 'Glow Lab',
+      imageUrl:
+          'https://images.unsplash.com/photo-1599751449128-eb7249c3d6b1?w=400',
+      price: 28.00,
+      quantity: 1,
+      orderDate: DateTime.now().subtract(const Duration(minutes: 45)),
+      status: OrderStatus.pending,
+      variant: '100ml',
+    ),
+    OrderItem(
+      id: 'ORD-1008',
+      productName: 'SPF 50 Sunscreen Gel',
+      brand: 'PureSkin',
+      imageUrl:
+          'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400',
+      price: 22.00,
+      quantity: 2,
+      orderDate: DateTime.now().subtract(const Duration(days: 4)),
+      status: OrderStatus.shipped,
+    ),
+    OrderItem(
+      id: 'ORD-1009',
+      productName: 'Retinol Night Cream',
+      brand: 'Glow Lab',
+      imageUrl:
+          'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400',
+      price: 64.00,
+      quantity: 1,
+      orderDate: DateTime.now().subtract(const Duration(days: 10)),
+      status: OrderStatus.delivered,
+      variant: '30ml',
+    ),
+    OrderItem(
+      id: 'ORD-1010',
+      productName: 'Lavender Bath Salts',
+      brand: 'Bloom',
+      imageUrl:
+          'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400',
+      price: 14.50,
+      quantity: 2,
+      orderDate: DateTime.now().subtract(const Duration(hours: 8)),
+      status: OrderStatus.processing,
+      variant: '500g',
+    ),
+  ];
 }

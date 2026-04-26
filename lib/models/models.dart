@@ -109,3 +109,79 @@ class Review {
     required this.verified,
   });
 }
+
+// order
+
+enum OrderStatus {
+  pending,
+  processing,
+  shipped,
+  delivered,
+  cancelled;
+
+  String get label {
+    switch (this) {
+      case OrderStatus.pending:
+        return 'Pending';
+      case OrderStatus.processing:
+        return 'Processing';
+      case OrderStatus.shipped:
+        return 'Shipped';
+      case OrderStatus.delivered:
+        return 'Delivered';
+      case OrderStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+}
+
+@immutable
+class OrderItem {
+  const OrderItem({
+    required this.id,
+    required this.productName,
+    required this.brand,
+    required this.imageUrl,
+    required this.price,
+    required this.quantity,
+    required this.orderDate,
+    required this.status,
+    this.variant,
+  });
+
+  final String id;
+  final String productName;
+  final String brand;
+  final String imageUrl;
+  final double price;
+  final int quantity;
+  final DateTime orderDate;
+  final OrderStatus status;
+  final String? variant;
+
+  double get total => price * quantity;
+
+  OrderItem copyWith({
+    String? id,
+    String? productName,
+    String? brand,
+    String? imageUrl,
+    double? price,
+    int? quantity,
+    DateTime? orderDate,
+    OrderStatus? status,
+    String? variant,
+  }) {
+    return OrderItem(
+      id: id ?? this.id,
+      productName: productName ?? this.productName,
+      brand: brand ?? this.brand,
+      imageUrl: imageUrl ?? this.imageUrl,
+      price: price ?? this.price,
+      quantity: quantity ?? this.quantity,
+      orderDate: orderDate ?? this.orderDate,
+      status: status ?? this.status,
+      variant: variant ?? this.variant,
+    );
+  }
+}

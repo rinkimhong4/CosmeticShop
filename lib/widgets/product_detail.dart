@@ -19,7 +19,7 @@ class ProductDetail extends StatefulWidget {
 
 class _ProductDetailState extends State<ProductDetail> {
   int _currentIndex = 0;
-  int _quantity = 1;
+  
   final PageController _controller = PageController();
 
   @override
@@ -456,42 +456,6 @@ class _ProductDetailState extends State<ProductDetail> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildQuantitySelector() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.gray.withValues(alpha: 0.3)),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          _qtyButton(Icons.remove, () {
-            if (_quantity > 1) setState(() => _quantity--);
-          }),
-          SizedBox(
-            width: 32,
-            child: Text(
-              '$_quantity',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-            ),
-          ),
-          _qtyButton(Icons.add, () => setState(() => _quantity++)),
-        ],
-      ),
-    );
-  }
-
-  Widget _qtyButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Icon(icon, size: 18, color: AppColors.primary),
       ),
     );
   }

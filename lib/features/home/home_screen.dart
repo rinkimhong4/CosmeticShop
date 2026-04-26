@@ -2,13 +2,14 @@ import 'package:cosmetic_shop/core/data/app_data.dart';
 import 'package:cosmetic_shop/core/utils/section_header.dart';
 import 'package:cosmetic_shop/features/home/appbar.dart';
 import 'package:cosmetic_shop/features/home/category_list.dart';
+import 'package:cosmetic_shop/features/orders/order_screen.dart';
 import 'package:cosmetic_shop/models/models.dart';
 import 'package:cosmetic_shop/widgets/banner_slider_widget.dart';
-import 'package:cosmetic_shop/widgets/btn_favorite.dart';
 import 'package:cosmetic_shop/widgets/product_card_widget.dart';
 import 'package:cosmetic_shop/widgets/product_detail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,7 +26,10 @@ class HomeScreen extends StatelessWidget {
           // app bar
           SliverPersistentHeader(
             pinned: true,
-            delegate: HomeHeaderDelegate(topPadding: topPadding),
+            delegate: HomeHeaderDelegate(
+              topPadding: topPadding,
+              onCartTap: () => Get.to(() => const OrderScreen()),
+            ),
           ),
 
           SliverPadding(
