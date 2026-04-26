@@ -1,7 +1,7 @@
 import 'package:cosmetic_shop/core/theme/app_theme.dart';
 import 'package:cosmetic_shop/core/utils/wide_scoop_clipper.dart';
-import 'package:cosmetic_shop/core/widgets/app_circle_button.dart';
-import 'package:cosmetic_shop/core/widgets/app_primary_button.dart';
+import 'package:cosmetic_shop/widgets/app_circle_button.dart';
+import 'package:cosmetic_shop/widgets/app_primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';

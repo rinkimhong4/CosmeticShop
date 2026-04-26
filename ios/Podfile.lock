@@ -1,20 +1,26 @@
 PODS:
+  - adaptive_platform_ui (0.1.0):
+    - Flutter
   - Flutter (1.0.0)
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
 
 DEPENDENCIES:
+  - adaptive_platform_ui (from `.symlinks/plugins/adaptive_platform_ui/ios`)
   - Flutter (from `Flutter`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
 
 EXTERNAL SOURCES:
+  adaptive_platform_ui:
+    :path: ".symlinks/plugins/adaptive_platform_ui/ios"
   Flutter:
     :path: Flutter
   sqflite_darwin:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
 
 SPEC CHECKSUMS:
+  adaptive_platform_ui: f54f620666d1797636f9ef06f49137ef2cc13611
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
 

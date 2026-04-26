@@ -1,6 +1,6 @@
-import 'package:cosmetic_shop/core/widgets/app_field_widget.dart';
-import 'package:cosmetic_shop/core/widgets/social_media_btn.dart';
 import 'package:cosmetic_shop/features/auth/signup/sign_up_screen.dart';
+import 'package:cosmetic_shop/widgets/app_field_widget.dart';
+import 'package:cosmetic_shop/widgets/social_media_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmetic_shop/core/theme/app_theme.dart';
 import 'package:cosmetic_shop/core/utils/validators.dart';
