@@ -185,3 +185,34 @@ class OrderItem {
     );
   }
 }
+
+// shipping
+
+class ShippingOption {
+  const ShippingOption({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.arrival,
+    required this.icon,
+  });
+
+  final String id;
+  final String name;
+  final double price;
+  final DateTime arrival;
+  final IconData icon;
+}
+
+@immutable
+class ShippingAddress {
+  const ShippingAddress({
+    required this.id,
+    required this.label,
+    required this.address,
+  });
+
+  final String id;
+  final String label;
+  final String address;
+}

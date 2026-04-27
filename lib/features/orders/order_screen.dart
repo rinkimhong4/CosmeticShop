@@ -1,10 +1,14 @@
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cosmetic_shop/core/data/app_data.dart';
 import 'package:cosmetic_shop/core/theme/app_theme.dart';
+import 'package:cosmetic_shop/features/orders/choose_shipping.dart';
+import 'package:cosmetic_shop/features/orders/order_summary_bar.dart';
 import 'package:cosmetic_shop/models/models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -18,6 +22,7 @@ class _OrderScreenState extends State<OrderScreen>
     with SingleTickerProviderStateMixin {
   late final List<OrderItem> _orders = [...AppData.mockOrders];
   late final _slidableController = SlidableController(this);
+  bool _promoApplied = false;
 
   final _currency = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
   final _date = DateFormat('MMM d, h:mm a');
@@ -54,22 +59,28 @@ class _OrderScreenState extends State<OrderScreen>
 
   void _removeOrder(OrderItem order) {
     final removedIndex = _orders.indexOf(order);
-    setState(() => _orders.remove(order));
 
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          content: Text('${order.productName} removed'),
-          action: SnackBarAction(
-            label: 'Undo',
-            onPressed: () {
-              setState(() => _orders.insert(removedIndex, order));
-            },
-          ),
+    AdaptiveAlertDialog.show(
+      context: context,
+      title: order.productName,
+      message: 'Are you sure?',
+      actions: [
+        AlertAction(
+          title: 'Cancel',
+          style: AlertActionStyle.cancel,
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-      );
+        AlertAction(
+          title: 'Confirm',
+          style: AlertActionStyle.primary,
+          onPressed: () {
+            setState(() => _orders.removeAt(removedIndex));
+          },
+        ),
+      ],
+    );
   }
 
   void _archiveOrder(OrderItem order) {
@@ -95,42 +106,69 @@ class _OrderScreenState extends State<OrderScreen>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveScaffold(
-      appBar: const AdaptiveAppBar(useNativeToolbar: true, title: 'Orders'),
+    final subtotal = _orders.fold<double>(0, (sum, o) => sum + o.total);
+    const delivery = 10.0;
+    final tax = subtotal * 0.12;
+    final discount = _promoApplied ? 20.0 : 0.0;
 
-      body: _orders.isEmpty
-          ? _EmptyState(onRefresh: _refresh)
-          : Padding(
-              padding: const EdgeInsets.only(top: 120.0),
-              child: SlidableAutoCloseBehavior(
-                child: RefreshIndicator(
-                  onRefresh: _refresh,
-                  child: ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
-                    itemCount: _orders.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final order = _orders[index];
-                      return _OrderCard(
-                        key: ValueKey(order.id),
-                        order: order,
-                        currency: _currency,
-                        date: _date,
-                        statusColor: _statusColor(order.status),
-                        statusIcon: _statusIcon(order.status),
-                        onTap: () {
-                          // navigate to order detail
+    return AdaptiveScaffold(
+      appBar: const AdaptiveAppBar(title: 'Orders'),
+      body: Column(
+        children: [
+          Expanded(
+            child: _orders.isEmpty
+                ? _EmptyState(onRefresh: _refresh)
+                : SlidableAutoCloseBehavior(
+                    child: RefreshIndicator(
+                      onRefresh: _refresh,
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 120),
+                        itemCount: _orders.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          final order = _orders[index];
+                          return _OrderCard(
+                            key: ValueKey(order.id),
+                            order: order,
+                            currency: _currency,
+                            date: _date,
+                            statusColor: _statusColor(order.status),
+                            statusIcon: _statusIcon(order.status),
+                            onTap: () {},
+                            onArchive: () => _archiveOrder(order),
+                            onDelete: () => _removeOrder(order),
+                            controller: _slidableController,
+                          );
                         },
-                        onArchive: () => _archiveOrder(order),
-                        onDelete: () => _removeOrder(order),
-                        controller: _slidableController,
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
-              ),
+          ),
+          if (_orders.isNotEmpty)
+            OrderSummaryBar(
+              subtotal: subtotal,
+              deliveryCharge: delivery,
+              tax: tax,
+              discount: discount,
+              onApplyPromo: (code) {
+                if (code.isEmpty) return;
+                setState(() => _promoApplied = true);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    behavior: SnackBarBehavior.floating,
+                    content: Text('Promo "$code" applied'),
+                  ),
+                );
+              },
+              onCheckout: () {
+                // navigate to checkout
+                // Navigator.push(context, )
+                Get.to(() => ChooseShippingScreen());
+              },
             ),
+        ],
+      ),
     );
   }
 }
@@ -147,6 +185,7 @@ class _OrderCard extends StatefulWidget {
     required this.onArchive,
     required this.onDelete,
     required this.controller,
+    this.onQuantityChanged,
   });
 
   final OrderItem order;
@@ -158,51 +197,71 @@ class _OrderCard extends StatefulWidget {
   final VoidCallback onArchive;
   final VoidCallback onDelete;
   final SlidableController controller;
+  final ValueChanged<int>? onQuantityChanged;
 
   @override
   State<_OrderCard> createState() => _OrderCardState();
 }
 
 class _OrderCardState extends State<_OrderCard> {
-  int _quantity = 0;
+  late int _quantity = widget.order.quantity;
+
+  void _setQuantity(int value) {
+    if (value < 1) return;
+    setState(() => _quantity = value);
+    widget.onQuantityChanged?.call(value);
+  }
+
   Widget _buildQuantitySelector() {
     return Container(
+      height: 32,
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.gray.withValues(alpha: 0.3)),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _qtyButton(Icons.remove, () {
-            if (_quantity > 1) setState(() => _quantity--);
-          }),
+          _qtyButton(
+            CupertinoIcons.minus,
+            _quantity > 1 ? () => _setQuantity(_quantity - 1) : null,
+          ),
           SizedBox(
-            width: 32,
+            width: 28,
             child: Text(
               '$_quantity',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
           ),
-          _qtyButton(Icons.add, () => setState(() => _quantity++)),
+          _qtyButton(CupertinoIcons.plus, () => _setQuantity(_quantity + 1)),
         ],
       ),
     );
   }
 
-  Widget _qtyButton(IconData icon, VoidCallback onTap) {
+  Widget _qtyButton(IconData icon, VoidCallback? onTap) {
+    final disabled = onTap == null;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Icon(icon, size: 18, color: AppColors.primary),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: Icon(
+          icon,
+          size: 14,
+          color: disabled
+              ? AppColors.gray.withValues(alpha: 0.4)
+              : AppColors.primary,
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final lineTotal = widget.order.price * _quantity;
+
     return Slidable(
       key: ValueKey(widget.order.id),
       groupTag: 'orders',
@@ -256,12 +315,17 @@ class _OrderCardState extends State<_OrderCard> {
                   // Image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      widget.order.imageUrl,
-                      width: 72,
-                      height: 72,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.order.imageUrl,
+                      width: 74,
+                      height: 74,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      placeholder: (_, __) => Container(
+                        width: 72,
+                        height: 72,
+                        color: Colors.grey.shade200,
+                      ),
+                      errorWidget: (_, __, ___) => Container(
                         width: 72,
                         height: 72,
                         color: Colors.grey.shade200,
@@ -279,29 +343,32 @@ class _OrderCardState extends State<_OrderCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Top row: brand + status pill
                         Row(
                           children: [
                             Expanded(
                               child: Text(
-                                widget.order.brand,
+                                widget.order.brand.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 11,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                   color: Colors.grey.shade500,
-                                  letterSpacing: 0.5,
+                                  letterSpacing: 0.6,
                                 ),
                               ),
                             ),
-
-                            // _StatusPill(
-                            //   color: widget.statusColor,
-                            //   icon: widget.statusIcon,
-                            //   label: widget.order.status.label,
-                            // ),
-                            _buildQuantitySelector(),
+                            _StatusPill(
+                              color: widget.statusColor,
+                              icon: widget.statusIcon,
+                              label: widget.order.status.label,
+                            ),
                           ],
                         ),
                         const SizedBox(height: 4),
+
+                        // Product name
                         Text(
                           widget.order.productName,
                           maxLines: 2,
@@ -312,34 +379,36 @@ class _OrderCardState extends State<_OrderCard> {
                             height: 1.25,
                           ),
                         ),
-                        if (widget.order.variant != null) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            widget.order.variant!,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 8),
+                        // if (widget.order.variant != null) ...[
+                        //   const SizedBox(height: 2),
+                        //   Text(
+                        //     widget.order.variant!,
+                        //     style: TextStyle(
+                        //       fontSize: 12,
+                        //       color: Colors.grey.shade600,
+                        //     ),
+                        //   ),
+                        // ],
+                        const SizedBox(height: 4),
+
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
-                              widget.currency.format(widget.order.total),
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.currency.format(lineTotal),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const Spacer(),
-                            Text(
-                              widget.date.format(widget.order.orderDate),
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
+                            _buildQuantitySelector(),
                           ],
                         ),
                       ],

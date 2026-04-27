@@ -257,4 +257,77 @@ class AppData {
       variant: '500g',
     ),
   ];
+
+  // shipping
+
+  static final List<ShippingOption> shippingOptions = [
+    ShippingOption(
+      id: 'economy',
+      name: 'Economy',
+      price: 10.0,
+      arrival: DateTime.now().add(const Duration(days: 5)),
+      icon: Icons.local_shipping_outlined,
+    ),
+    ShippingOption(
+      id: 'jt',
+      name: 'J&T Express',
+      price: 20.0,
+      arrival: DateTime.now().add(const Duration(days: 3)),
+      icon: Icons.delivery_dining_outlined,
+    ),
+    ShippingOption(
+      id: 'vt',
+      name: 'V&T Priority',
+      price: 30.0,
+      arrival: DateTime.now().add(const Duration(days: 1)),
+      icon: Icons.flight_takeoff_outlined,
+    ),
+  ];
+  static final List<ShippingOption> shippingAddress = [
+    ShippingOption(
+      id: 'home',
+      name: 'Home Address',
+      price: 0,
+      arrival: DateTime.now().add(const Duration(days: 5)),
+      icon: Icons.local_shipping_outlined,
+    ),
+    ShippingOption(
+      id: 'office',
+      name: 'Office Address',
+      price: 20.0,
+      arrival: DateTime.now().add(const Duration(days: 3)),
+      icon: Icons.delivery_dining_outlined,
+    ),
+    ShippingOption(
+      id: '',
+      name: 'V&T Priority',
+      price: 30.0,
+      arrival: DateTime.now().add(const Duration(days: 1)),
+      icon: Icons.flight_takeoff_outlined,
+    ),
+  ];
+  // shipping address
+
+  static final List<ShippingAddress> shippingAddresses = [
+    const ShippingAddress(
+      id: 'home',
+      label: 'Home',
+      address: '1901 Thornridge Cir, Shiloh, Hawaii 81063',
+    ),
+    const ShippingAddress(
+      id: 'office',
+      label: 'Office',
+      address: '4517 Washington Ave, Manchester, Kentucky 39495',
+    ),
+    const ShippingAddress(
+      id: 'parents',
+      label: "Parent's House",
+      address: '8502 Preston Rd, Inglewood, Maine 98380',
+    ),
+    const ShippingAddress(
+      id: 'friend',
+      label: "Friend's House",
+      address: '2464 Royal Ln, Mesa, New Jersey 45463',
+    ),
+  ];
 }
